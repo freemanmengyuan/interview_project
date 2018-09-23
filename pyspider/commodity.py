@@ -6,6 +6,9 @@
 '''
 获取分类信息
 基础的抓取信息
+抓取单页面数据
+考虑入库效率先写入文件
+后续多线程入库
 '''
 
 from pyspider.libs.base_handler import *
@@ -18,6 +21,7 @@ class Handler(BaseHandler):
 
     def __init__(self):
         self.url = 'https://www.yaofang.cn/c/autokey/categoryAll'
+
 
     @every(minutes=24 * 60)
     def on_start(self):  # 脚本入口
@@ -45,7 +49,7 @@ class Handler(BaseHandler):
                 dect = {'id': two_num, 'name': two_cate_name, 'parent_id': one_num, 'catch_url': two_cate_url}
                 cate.append(dect)
                 #获取三级分类
-                for min_menu in menu('dl dd a').items():
+                for min_menu in two_menu('dd a').items():
                     #print(min_menu)
                     min_cate_name = min_menu.text()
                     min_cate_url = min_menu.attr('href')
@@ -54,9 +58,17 @@ class Handler(BaseHandler):
                     three_num = three_num + 1
                 two_num = two_num + 1
             one_num = one_num + 1
+        result = json.dumps(cate)
+        print(result)
+        self.write_log(result)
 
-        #print(json.dumps(cate))
-
+    def write_log(self, str):
+        try:
+            f = open('/root/python/2018-09-24.log', 'w')
+            f.write(str)
+        finally:
+            if f:
+                f.close()
 
 
 
