@@ -14,7 +14,6 @@
 from pyspider.libs.base_handler import *
 import json
 
-
 class Handler(BaseHandler):
     crawl_config = {
     }
@@ -39,21 +38,21 @@ class Handler(BaseHandler):
             one_cate = menu('.fenleiTit').html()
             one_cate_true = one_cate[50:-1:1] #切片
             #print(one_cate_true)
-            dect = {'id':one_num, 'name':one_cate_true, 'parent_id':0, 'catch_url': ''}
+            dect = {'id':one_num, 'name':one_cate_true, 'type':1, 'parent_id':0, 'catch_url': ''}
             cate.append(dect)
             # 获取二级分类
             for two_menu in menu('dl').items():
                 #print(min_menu)
                 two_cate_name = two_menu('dt a').text()
                 two_cate_url = two_menu('dt a').attr('href')
-                dect = {'id': two_num, 'name': two_cate_name, 'parent_id': one_num, 'catch_url': two_cate_url}
+                dect = {'id':two_num, 'name':two_cate_name, 'type':2, 'parent_id':one_num, 'catch_url':two_cate_url}
                 cate.append(dect)
                 #获取三级分类
                 for min_menu in two_menu('dd a').items():
                     #print(min_menu)
                     min_cate_name = min_menu.text()
                     min_cate_url = min_menu.attr('href')
-                    dect = {'id': three_num, 'name': min_cate_name, 'parent_id': two_num, 'catch_url': min_cate_url}
+                    dect = {'id':three_num, 'name':min_cate_name, 'type':3, 'parent_id':two_num, 'catch_url':min_cate_url}
                     cate.append(dect)
                     three_num = three_num + 1
                 two_num = two_num + 1
@@ -64,7 +63,7 @@ class Handler(BaseHandler):
 
     def write_log(self, str):
         try:
-            f = open('/root/python/2018-09-24.log', 'w')
+            f = open('/root/python/cateropy.log', 'w')
             f.write(str)
         finally:
             if f:
