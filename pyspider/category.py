@@ -65,7 +65,7 @@ class Handler(BaseHandler):
     def write_log(self, str):
         try:
             f = open('/root/python/cateropy.log', 'w')
-            f.write(str)cate
+            f.write(str)
         finally:
             if f:
                 f.close()
