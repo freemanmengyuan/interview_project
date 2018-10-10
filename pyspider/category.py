@@ -13,6 +13,7 @@
 
 from pyspider.libs.base_handler import *
 import json
+import MySQLdb
 
 class Handler(BaseHandler):
     crawl_config = {
@@ -59,16 +60,38 @@ class Handler(BaseHandler):
             one_num = one_num + 1
         result = json.dumps(cate)
         print(result)
-        self.write_log(result)
+        self.write_data(cate)
 
     def write_log(self, str):
         try:
             f = open('/root/python/cateropy.log', 'w')
-            f.write(str)
+            f.write(str)cate
         finally:
             if f:
                 f.close()
+    def write_data(self, data):
+        # 打开数据库连接
+        db = MySQLdb.connect("localhost", "root", "469312", "yao_site", charset='utf8')
 
+        # 使用cursor()方法获取操作游标
+        cursor = db.cursor()
+        # SQL 批量插入
+        try:
+            for item in data:
+                sql = "INSERT INTO cateropy(id," \
+                      "name, type, parent_id, catch_url) \
+                      VALUES ('%d', '%s', '%d', '%d', '%s')" % \
+                      (item['id'], item['name'], item['type'], item['parent_id'], item['catch_url'])
+                # 执行sql语句
+                cursor.execute(sql)
+                # 提交到数据库执行
+                db.commit()
+        except:
+            # Rollback in case there is any error
+            db.rollback()
+
+        # 关闭数据库连接
+        db.close()
 
 
 
