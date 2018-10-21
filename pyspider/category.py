@@ -13,7 +13,7 @@
 
 from pyspider.libs.base_handler import *
 import json
-import MySQLdb
+#import MySQLdb
 import time
 
 class Handler(BaseHandler):
@@ -62,11 +62,11 @@ class Handler(BaseHandler):
         result = json.dumps(cate)
         print(result)
         self.write_log(result)
-        self.write_data(cate)
+        #self.write_data(cate)
 
     def write_log(self, str):
         try:
-            ctime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            ctime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
             f = open('/root/workspace/python/category_'+ctime+'.log', 'w')
             f.write(str)
         finally:
@@ -79,7 +79,7 @@ class Handler(BaseHandler):
 
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
-        # SQL 批量插入
+        # SQL批量写入
         try:
             for item in data:
                 ctime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
