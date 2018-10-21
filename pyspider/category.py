@@ -14,6 +14,7 @@
 from pyspider.libs.base_handler import *
 import json
 import MySQLdb
+import time
 
 class Handler(BaseHandler):
     crawl_config = {
@@ -60,15 +61,18 @@ class Handler(BaseHandler):
             one_num = one_num + 1
         result = json.dumps(cate)
         print(result)
+        self.write_log(result)
         self.write_data(cate)
 
     def write_log(self, str):
         try:
-            f = open('/root/python/cateropy.log', 'w')
+            ctime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            f = open('/root/workspace/python/category_'+ctime+'.log', 'w')
             f.write(str)
         finally:
             if f:
                 f.close()
+
     def write_data(self, data):
         # 打开数据库连接
         db = MySQLdb.connect("localhost", "root", "469312", "yao_site", charset='utf8')
@@ -78,12 +82,15 @@ class Handler(BaseHandler):
         # SQL 批量插入
         try:
             for item in data:
-                sql = "INSERT INTO cateropy(id," \
-                      "name, type, parent_id, catch_url) \
-                      VALUES ('%d', '%s', '%d', '%d', '%s')" % \
-                      (item['id'], item['name'], item['type'], item['parent_id'], item['catch_url'])
+                ctime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                sql = "INSERT INTO yf_category(id," \
+                      "name, type, parent_id, catch_url, time) \
+                      VALUES ('%d', '%s', '%d', '%d', '%s', '%s')" % \
+                      (item['id'], item['name'], item['type'], item['parent_id'], item['catch_url'], ctime)
                 # 执行sql语句
-                cursor.execute(sql)
+                print(sql)
+                ret = cursor.execute(sql)
+                print(ret)
                 # 提交到数据库执行
                 db.commit()
         except:
