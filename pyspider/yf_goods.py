@@ -17,6 +17,7 @@ import time
 
 class Handler(BaseHandler):
     crawl_config = {
+
     }
 
     def __init__(self):
@@ -28,13 +29,17 @@ class Handler(BaseHandler):
         list_tasks = json.loads(self.s_tasks)
         #print(list_tasks[0:10:1])
         for task in list_tasks:
-            self.crawl(task['catch_url'], callback=self.index_page)
-
+            if task['type'] == 3:
+                self.crawl(task['catch_url'], callback=self.index_page, save={'cate_id':task['id'], 'type':task['type']})
         #self.crawl(self.url, callback=self.index_page)  # 添加任务至调度器
 
-    @config(age=10 * 24 * 60 * 60)
+    #@config(age=10 * 24 * 60 * 60)
     def index_page(self, response):
-        print('hello')
+        #获取分类id 标示药品分类
+        cate_id  = response.save['cate_id']
+        str_page_count = response.doc('.fp_total').html()
+        list_page = list(str_page_count)
+        print(list_page)
 
     def write_log(self, str):
         try:
