@@ -17,7 +17,6 @@ import time
 
 class Handler(BaseHandler):
     crawl_config = {
-
     }
 
     def __init__(self):
