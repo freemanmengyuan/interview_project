@@ -24,7 +24,7 @@ class Handler(BaseHandler):
         self.s_tasks = self.read_log('/root/workspace/python/category_2018-10-21.log')
         self.goods = list()
 
-    @every(minutes=24 * 60)
+    #@every(minutes=24 * 60)
     def on_start(self):  # 脚本入口
         list_tasks = json.loads(self.s_tasks)
         #print(list_tasks[0:10:1])
@@ -34,7 +34,11 @@ class Handler(BaseHandler):
                     task['catch_url'], callback=self.switch_page,
                     save={'cate_id':task['id'], 'type':task['type']}
                 )
+        '''
         print(self.goods)
+        str_goods = json.dumps(self.goods)
+        self.write_log(str_goods)
+        '''
         #self.crawl(self.url, callback=self.index_page)  # 添加任务至调度器
 
     # 判断是否需要请求分页
@@ -68,26 +72,32 @@ class Handler(BaseHandler):
     @config(priority=2)
     def detail_page(self, response):
         cate_id = response.save['cate_id']
-        print(cate_id)
         good_no = response.doc('#gids').val()
-        name = response.doc('#name').val()
+        name = response.doc('#names').val()
         price = response.doc('#price').val()
         set_num = response.doc('#newKuc').text()
-        detail = response.doc('.list_common instructions').html()
-        notice = response.doc('.list_common afterSaleService').html()
-        pic = ''
-        dect = {
+        detail = response.doc('.instructions').html()
+        notice = response.doc('.afterSaleService').html()
+        img_list = list()
+        for img in response.doc('.detail_items img').items():
+            img_list.append(img.attr('src'))
+        pic = img_list
+        return {
             'name':name, 'cate_id':cate_id, 'good_no':good_no,
             'price':price,'set_num':set_num, 'pic':pic, 'detail':detail,
             'notice':notice,
         }
-        self.goods.append(dect)
-
-
+        #self.goods.append(dect)
+        #print(self.goods)
+        #exit()
+    '''
+        def on_result(self, result):
+        print(result)
+    '''
     def write_log(self, str):
         try:
             ctime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-            f = open('/root/workspace/python/category_'+ctime+'.log', 'w')
+            f = open('/root/workspace/python/goods_'+ctime+'.log', 'w')
             f.write(str)
         finally:
             if f:
