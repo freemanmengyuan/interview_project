@@ -62,6 +62,7 @@ class Handler(BaseHandler):
         result = json.dumps(cate)
         print(result)
         self.write_log(result)
+
         #self.write_data(cate)
 
     def write_log(self, str):
