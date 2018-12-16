@@ -109,7 +109,7 @@ class Handler(BaseHandler):
         def on_result(self, result):
         print(result)
     '''
-
+    #写入数据
     def add_Mysql(self, order_num, url, title, date, day, who, text, image):
         try:
             cursor = self.db.cursor()
@@ -123,10 +123,14 @@ class Handler(BaseHandler):
             print(e)
             self.db.rollback()
 
-    def write_log(self, str):
+    #打印log
+    def write_log(self, str, name, file_url='/root/workspace/python/log/'):
         try:
-            ctime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-            f = open('/root/workspace/python/goods_'+ctime+'.log', 'w')
+            date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+            datetime = time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time()))
+            file = file_url + 'log-' + date + name + '.log'
+            f = open(file, 'a+')
+            str = datetime + ' ' + str + '\n'
             f.write(str)
         finally:
             if f:
