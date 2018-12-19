@@ -16,6 +16,7 @@ import json
 import time
 import re
 import pymysql
+import os
 
 class Handler(BaseHandler):
     crawl_config = {
@@ -136,6 +137,7 @@ class Handler(BaseHandler):
             if f:
                 f.close()
 
+    #读取log
     def read_log(self, file):
         try:
             f = open(file, 'r')
@@ -145,4 +147,20 @@ class Handler(BaseHandler):
                 f.close()
         return ret
 
+    #保存图片
+    def save_img(self, response):
+        content = response.content
+        file_name = response.save['file_name']
+        print(file_name)
+        path = os.path.exists(response.save['dir_name'])
+        if response.status_code == 200:
+            if os.path.exists(path):
+                f = open(file_name, 'wb')
+                f.write(content)
+                print('save img ok')
+                f.close()
+            else:
+                print('dir error')
+        else:
+            print('save img error')
 
