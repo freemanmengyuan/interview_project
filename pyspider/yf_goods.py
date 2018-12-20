@@ -129,7 +129,7 @@ class Handler(BaseHandler):
         try:
             date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
             datetime = time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time()))
-            file = file_url + 'log-' + date + name + '.log'
+            file = file_url + 'log-'+ name + '-' + date + '.log'
             f = open(file, 'a+')
             str = datetime + ' ' + str + '\n'
             f.write(str)
@@ -147,20 +147,22 @@ class Handler(BaseHandler):
                 f.close()
         return ret
 
-    #保存图片
+    # 保存图片
     def save_img(self, response):
         content = response.content
-        file_name = response.save['file_name']
-        print(file_name)
-        path = os.path.exists(response.save['dir_name'])
+        base_name = os.path.basename(response.save['file_name'])
+        dir_name = response.save['dir_name']
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
+        file = dir_name + base_name
         if response.status_code == 200:
-            if os.path.exists(path):
-                f = open(file_name, 'wb')
+            if os.path.exists(dir_name):
+                f = open(file, 'wb')
                 f.write(content)
-                print('save img ok')
+                self.write_log(file, 'image')
                 f.close()
             else:
-                print('dir error')
+                self.write_log(dir_name + ' dir error', 'image')
         else:
-            print('save img error')
+            self.write_log(file + 'save error', 'image')
 
