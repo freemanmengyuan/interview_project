@@ -16,7 +16,7 @@ def read_log(file):
 
 def write_data(data):
     # 打开数据库连接
-    db = MySQLdb.connect("localhost", "root", "469312", "yao_site", charset='utf8')
+    db = MySQLdb.connect("101.37.125.202", "root", "Aadmin18003435512", "yaodian", charset='utf8')
 
     # 使用cursor()方法获取操作游标
     cursor = db.cursor()
@@ -42,7 +42,7 @@ def write_data(data):
     db.close()
 
 print("脚本开始执行。。。。")
-file = '/root/workspace/python/category_2018-10-21.log'
+file = '/root/workspace/python/category_2019-01-06.log'
 str = read_log(file)
 
 print("读取完毕。。。。")

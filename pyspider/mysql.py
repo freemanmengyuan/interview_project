@@ -28,7 +28,7 @@ db.close()
 '''
 
 #连接数据库
-db = pymysql.connect("localhost","root","469312","test")
+db = pymysql.connect("101.37.125.202","root","Aadmin18003435512","yaodian")
 
 #使用cursor()方法创建一个游标对象
 cursor = db.cursor()

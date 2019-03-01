@@ -34,7 +34,7 @@ class Handler(BaseHandler):
         cate = list()
         one_num = 1
         two_num = 20
-        three_num = 100
+        three_num = 200
         # 获取顶级分类
         for menu in response.doc('.yMenuList').items():
             one_cate = menu('.fenleiTit').html()
@@ -73,6 +73,7 @@ class Handler(BaseHandler):
         finally:
             if f:
                 f.close()
+
 
     def write_data(self, data):
         # 打开数据库连接

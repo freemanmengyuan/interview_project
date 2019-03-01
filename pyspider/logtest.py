@@ -3,11 +3,11 @@
 
 import time
 
-def write_log(str, name, file_url='/root/workspace/python/log/'):
+def write_log(str, name, dir_url='/root/workspace/python/log/'):
     try:
         date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
         datetime = time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time()))
-        file = file_url + 'log-' + date + name + '.log'
+        file = dir_url + name +'-' + date + '.log'
         f = open(file, 'a+')
         str = datetime +' '+ str + '\n'
         f.write(str)
