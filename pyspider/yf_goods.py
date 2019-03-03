@@ -25,7 +25,7 @@ class Handler(BaseHandler):
     def __init__(self):
         self.s_tasks = self.read_log('/root/workspace/python/icode/category_2019-01-06.log')
         #self.goods = list()
-        #self.db = pymysql.connect('localhost', 'root', '469312', 'yao_site', charset='utf8')
+        self.db = pymysql.connect('101.37.125.202', 'root', 'Aadmin18003435512', 'yaodian', charset='utf8')
 
     #@every(minutes=24 * 60)
     def on_start(self):  # 脚本入口
@@ -88,27 +88,45 @@ class Handler(BaseHandler):
     # 进入详情抽取结构化数据
     @config(priority=2)
     def detail_page(self, response):
+        name = response.doc('#names').val()  # 商品名
         cate_id = response.save['cate_id']
         good_no = response.doc('#gids').val() #商品编号
-        name = response.doc('#names').val()
-        price = response.doc('#price').val()
-        set_num = response.doc('#newKuc').text()
-        detail = response.doc('.instructions').html()
-        notice = response.doc('.afterSaleService').html()
-        img_list = list()
+        # 药品规格 批文号 生产商家 python3版本的正则 字符串截取失效 气人 先保存
+        size = response.doc('.info p').html()
+        #str_info = info.decode('unicode-escape').encode('utf-8')
+        #l_info = info.split(u"<br/>")
+        #l_info = re.match('规格', info)
+
+        price = response.doc('#price').val() #商品价格
+        set_num = response.doc('#newKuc').text() #库存
+        detail = response.doc('.instructions').html() #说明书
+        notice = response.doc('.afterSaleService').html() #售后说明
+        remote_img_list = list()
+        local_img_list = list()
         for img in response.doc('.detail_items img').items():
-            img_list.append(img.attr('src'))
+            url = img.attr('src')
+            remote_img_list.append(url)
             #保存图片至本地
-        pic = img_list
+            if url:
+                file_name = os.path.basename(url)
+                file_name = str(time.time()) + file_name
+                local_img_list.append(file_name)
+                self.crawl(url, callback=self.save_img,
+                    save={'file_name':file_name, 'dir_name':'/root/workspace/python/public/images/'}
+                ) #添加任务至调度器
+
+        remote_img_str = json.dumps(remote_img_list)
+        local_img_str = json.dumps(local_img_list)
         result = {
-            'name':name, 'cate_id':cate_id, 'good_no':good_no,
-            'price':price,'set_num':set_num, 'pic':pic, 'detail':detail,
+            'name':name, 'cate_id':cate_id, 'good_no':good_no,'size':size,
+            'price':price,'set_num':set_num, 'remote_pic':remote_img_str, 'local_pic':local_img_str, 'detail':detail,
             'notice':notice,
         }
         #打印log
         self.write_log(json.dumps(result), 'goods')
         #写入数据库
-        #self.add_Mysql(count, url, title, date, day, who, text, image)
+        map_detail = {'text':detail}
+        self.add_record(name, cate_id, good_no, size, price, set_num, remote_img_str, local_img_str, json.dumps(map_detail), notice)
         return result
         #self.goods.append(dect)
         #print(self.goods)
@@ -117,23 +135,27 @@ class Handler(BaseHandler):
         print(result)
     '''
     #写入数据
-    def add_record(self, order_num, url, title, date, day, who, text, image):
+    def add_record(self, name, cate_id, good_no, size, price, set_num, remote_img_str, local_img_str, detail, notice):
         try:
             cursor = self.db.cursor()
-            sql = 'insert into qunar(order_num, url, title, date, day, who, text, image) values (%d,"%s","%s","%s","%s","%s","%s","%s")' % (
-            order_num, url, title, date, day, who, text, image);  # 插入数据库的SQL语句
-            print(sql)
+             # 插入数据库的SQL语句
+            ctime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            sql = "INSERT INTO yf_goods(name," \
+                  "category_id, good_no, size, price, set_num, remote_pic, local_pic, notice, ctime) \
+                  VALUES ('%s', '%s', '%s', '%s', '%s', '%s','%s','%s','%s','%s')" % \
+                  (name, cate_id, good_no, size, price, set_num, remote_img_str, local_img_str, notice, ctime)
             cursor.execute(sql)
-            print(cursor.lastrowid)
+            ret = cursor.lastrowid
             self.db.commit()
+            self.write_log('sql success'+ str(ret), 'sql')
         except Exception as e:
-            print(e)
+            #print(e)
             self.db.rollback()
 
     # 保存图片
     def save_img(self, response):
         content = response.content
-        base_name = os.path.basename(response.save['file_name'])
+        base_name = response.save['file_name']
         dir_name = response.save['dir_name']
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
@@ -142,18 +164,19 @@ class Handler(BaseHandler):
             if os.path.exists(dir_name):
                 f = open(file, 'wb')
                 f.write(content)
-                self.write_log(file, 'image')
                 f.close()
+                self.write_log(file, 'success_image')
             else:
-                self.write_log(dir_name + ' dir error', 'image')
+                # self.write_log(dir_name + ' dir error', 'image')
+                pass
         else:
-            self.write_log(file + 'save error', 'image')
+            self.write_log(file + 'save error', 'err_image')
 
     #打印log
     def write_log(self, str, name, dir_url='/root/workspace/python/log/'):
         try:
             date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-            datetime = time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time()))
+            datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             file = dir_url + name + '-' + date + '.log'
             f = open(file, 'a+')
             str = datetime + ' ' + str + '\n'

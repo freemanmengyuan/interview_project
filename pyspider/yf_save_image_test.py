@@ -27,8 +27,10 @@ class Handler(BaseHandler):
         #print(list_tasks[0:10:1])
         for url in self.url_list:
             if url:
+                file_name = os.path.basename(url)
+                file_name = str(time.time()) + file_name
                 self.crawl(url, callback=self.save_img,
-                    save={'file_name':url, 'dir_name':'/root/workspace/python/public/images/'}
+                    save={'file_name':file_name, 'dir_name':'/root/workspace/python/public/images/'}
                 ) #添加任务至调度器
         '''
         print(self.goods)
@@ -37,11 +39,11 @@ class Handler(BaseHandler):
         '''
 
     #打印log
-    def write_log(self, str, name, file_url='/root/workspace/python/log/'):
+    def write_log(self, str, name, dir_url='/root/workspace/python/log/'):
         try:
             date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
             datetime = time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time()))
-            file = file_url + 'log-' + date + name + '.log'
+            file = dir_url + name + '-' + date + '.log'
             f = open(file, 'a+')
             str = datetime + ' ' + str + '\n'
             f.write(str)
@@ -52,7 +54,7 @@ class Handler(BaseHandler):
     #保存图片
     def save_img(self, response):
         content = response.content
-        base_name = os.path.basename(response.save['file_name'])
+        base_name = response.save['file_name']
         dir_name = response.save['dir_name']
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
@@ -61,10 +63,11 @@ class Handler(BaseHandler):
             if os.path.exists(dir_name):
                 f = open(file, 'wb')
                 f.write(content)
-                self.write_log(file, 'image')
                 f.close()
+                self.write_log(file, 'success_image')
             else:
-                self.write_log(dir_name + ' dir error', 'image')
+                #self.write_log(dir_name + ' dir error', 'image')
+                pass
         else:
-            self.write_log(file + 'save error', 'image')
+            self.write_log(file + 'save error', 'err_image')
 

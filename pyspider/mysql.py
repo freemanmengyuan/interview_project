@@ -26,9 +26,9 @@ print "Database version : %s " % data
 db.close()
 
 '''
-
+#/usr/bin/mysql -h101.37.125.202 -uroot -p
 #连接数据库
-db = pymysql.connect("101.37.125.202","root","Aadmin18003435512","yaodian")
+db = pymysql.connect("","","","")
 
 #使用cursor()方法创建一个游标对象
 cursor = db.cursor()
