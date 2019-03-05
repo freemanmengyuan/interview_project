@@ -25,7 +25,7 @@ class Handler(BaseHandler):
     def __init__(self):
         self.s_tasks = self.read_log('/root/workspace/python/icode/category_2019-01-06.log')
         #self.goods = list()
-        self.db = pymysql.connect('101.37.125.202', 'root', 'Aadmin18003435512', 'yaodian', charset='utf8')
+        self.db = pymysql.connect('ip', 'user', 'pwd', 'data_base', charset='utf8')
 
     #@every(minutes=24 * 60)
     def on_start(self):  # 脚本入口

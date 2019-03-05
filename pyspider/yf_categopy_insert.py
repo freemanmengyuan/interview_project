@@ -16,7 +16,7 @@ def read_log(file):
 
 def write_data(data):
     # 打开数据库连接
-    db = MySQLdb.connect("101.37.125.202", "user", "paw", "yaodian", charset='utf8')
+    db = MySQLdb.connect("ip", "user", "paw", "data_base", charset='utf8')
 
     # 使用cursor()方法获取操作游标
     cursor = db.cursor()
