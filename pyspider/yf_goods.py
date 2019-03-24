@@ -16,19 +16,23 @@ import json
 import time
 import re
 import pymysql
-import os
 
+import os
 import sys
+
+import random
 
 
 class Handler(BaseHandler):
     crawl_config = {
+        #'headers':
     }
 
     def __init__(self):
+        #str_log_dir = '/root/workspace/python/icode/category_2019-01-06.log'
         self.s_tasks = self.read_log('/root/workspace/python/icode/category_2019-01-06.log')
         # self.goods = list()
-        self.db = pymysql.connect('ip', 'root', '*', 'yaodian', charset='utf8')
+        self.db = pymysql.connect('101.37.125.202', '', '', 'yaodian', charset='utf8')
 
     # @every(minutes=24 * 60)
     def on_start(self):  # 脚本入口
@@ -41,8 +45,8 @@ class Handler(BaseHandler):
         for task in list_tasks:
             # 28079 2473
             #if task['catch_url'] == 'https://www.yaofang.cn/c/category?cat_id=2473':
-            if task['type'] == 3:
-                self.crawl(task['catch_url'], callback=self.switch_page,
+            if task['type'] == 2:
+                self.crawl(task['catch_url'], callback=self.switch_page, headers={"User-Agent": self.user_agent()},
                            save={'cate_id': task['id'], 'type': task['type'], 'catch_url': task['catch_url']}
                            )  # 添加任务至调度器
         '''
@@ -74,7 +78,7 @@ class Handler(BaseHandler):
                 pageno = i * 40
                 pageno = str(pageno)
                 url = cate_url + '&page=' + pageno
-                self.crawl(url, callback=self.more_page, save={'cate_id': cate_id})
+                self.crawl(url, callback=self.more_page, save={'cate_id': cate_id}, headers={"User-Agent": self.user_agent()},)
         else:
             #pass
             self.index_page(response, cate_id)
@@ -90,8 +94,7 @@ class Handler(BaseHandler):
         for bprder in response.doc('.drug_item').items():
             self.crawl(bprder('.drug_item_img a').attr('href'),
                        callback=self.detail_page,
-                       save={'cate_id': cate_id, 'type': 3}
-                       )
+                       save={'cate_id': cate_id, 'type': 3}, headers={"User-Agent": self.user_agent()})
 
     # 进入详情抽取结构化数据
     @config(priority=2)
@@ -117,10 +120,11 @@ class Handler(BaseHandler):
             # 保存图片至本地
             if url:
                 file_name = os.path.basename(url)
-                file_name = str(time.time()) + file_name
+                file_name = 'bakserver_'+str(time.time()) + file_name
                 local_img_list.append(file_name)
                 self.crawl(url, callback=self.save_img,
-                    save={'file_name':file_name, 'dir_name':'/root/workspace/public/images/'}
+                    save={'file_name':file_name, 'dir_name':'/root/workspace/public/images/'},
+                           headers={"User-Agent": self.user_agent()},
                 ) #添加任务至调度器
 
         remote_img_str = json.dumps(remote_img_list)
@@ -214,3 +218,17 @@ class Handler(BaseHandler):
                 f.close()
         return ret
 
+    # 随机获取user_agent
+    def user_agent(self):
+        my_headers = [
+            "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/537.75.14",
+            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.90 Safari/537.36 2345Explorer/9.6.0.18627"
+        ]
+        return random.choice(my_headers)
+
+    #self.crawl('url', callback=self.index_page,headers={"User-Agent": user_agent()})
