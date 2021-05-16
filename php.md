@@ -31,5 +31,23 @@
     指的就是这里的opcodes的缓存（opcodes cache）。通过省去从源码到opcode的阶段，引擎可以直接执行缓存的opcode，以此提升性能。
     ```
 4. fpm
-    - 进程模型和进程的管理方式
+    - 进程模型
+    ```
+    PHP-FPM采用的是Master/Worker进程模型。当PHP-FPM启动时，会读取配置文件，然后创建一个Master进程和若干个Worker进程（具体是几个Worker进程是由php-fpm.conf中配置的个数决定）。Worker进程是由Master进程fork出来的。
+    Master进程：负责管理Worker进程、监听端口、分发请求
+    Worker进程：负责处理业务逻辑
+    ```
+    - 进程的管理方式
+    ```
+    // 动态
+    PHP-FPM启动时会创建一定数量的Worker进程。当请求数逐渐增大时，会动态增加Worker进程的数量；
+    当请求数降下来时，会销毁刚才动态创建出来的Worker进程。
+    // 静态
+    这种方式下，PHP-FPM启动时会创建配置文件中指定数量的Worker进程，不会根据请求数量的多少而增加减少。
+    因为PHP-FPM开启的每个Worker进程同一时间只能处理一个请求，所以在这种方式下当请求增大的时候，
+    将会出现等待的情形。
+    // 按需
+    在这种方式下，PHP-FPM启动时，不会创建Worker进程，当请求到达的时候Master进程才会fork出子进程。在这种模式下，如果请求量比较大，Master进程会非常繁忙，会占用大量CPU时间。所以这种模式不适合大流量的环境。
+    ```
     - fpm和nginx如何通信
+    
