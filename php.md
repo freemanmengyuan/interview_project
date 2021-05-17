@@ -30,7 +30,7 @@
     PHP工程优化措施中有一个比较常见的“开启opcache”
     指的就是这里的opcodes的缓存（opcodes cache）。通过省去从源码到opcode的阶段，引擎可以直接执行缓存的opcode，以此提升性能。
     ```
-4. fpm
+4. php-fpm
     - 进程模型
     ```
     PHP-FPM采用的是Master/Worker进程模型。当PHP-FPM启动时，会读取配置文件，然后创建一个Master进程和若干个Worker进程（具体是几个Worker进程是由php-fpm.conf中配置的个数决定）。Worker进程是由Master进程fork出来的。
@@ -49,5 +49,17 @@
     // 按需
     在这种方式下，PHP-FPM启动时，不会创建Worker进程，当请求到达的时候Master进程才会fork出子进程。在这种模式下，如果请求量比较大，Master进程会非常繁忙，会占用大量CPU时间。所以这种模式不适合大流量的环境。
     ```
-    - fpm和nginx如何通信
-    
+    - php-fpm和nginx如何通信
+    ```
+    PHP-FPM 支持两种通信模式：TCP socket和Unix socket
+    首先Nginx启动，会载入ngx_http_fastcgi_module模块，初始化FastCGI执行环境，实现FastCGI协议请求代理，
+    然后根据location配置，选择一个合适handler将请求翻译成fast-cgi请求，通过socket发送给php-fpm。
+    参考：https://zhuanlan.zhihu.com/p/112720502
+    ```
+
+5. 自动加载
+    ```
+    // 自动加载
+    https://segmentfault.com/a/1190000014948542
+    ```
+
