@@ -63,3 +63,46 @@
     https://segmentfault.com/a/1190000014948542
     ```
 
+6. 面向对象-多态
+
+   - 定义
+
+     ```
+     多态就是把子类对象赋值给父类引用，然后调用父类的方法，去执行子类覆盖父类的那个方法
+     ```
+
+   - 教科书式的范例-go语言版
+
+     ```
+     type Code string
+     
+     type Programmer interface {
+     	WriteHelloWorld() Code
+     }
+     
+     type GoProgrammer struct {
+     }
+     
+     func (p *GoProgrammer) WriteHelloWorld() Code {
+     	return "go func is action"
+     }
+     
+     type JavaProgrammer struct {
+     }
+     
+     func (j *JavaProgrammer) WriteHelloWorld() Code {
+     	return "java func is action"
+     }
+     
+     func TestInit(t *testing.T) {
+     	// 将子类对象赋值给父类引用 调用父类的方法 执行子类覆盖父类的方法
+     	var p Programmer
+     	//p = new(GoProgrammer)
+     	p = new(JavaProgrammer)
+     	t.Log(p.WriteHelloWorld())
+     }
+     ```
+
+     
+
+     
