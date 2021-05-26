@@ -59,7 +59,9 @@
 
 5. 自动加载
     ```
-    // 自动加载
+     (1)include,include_once,requice,requice_one常规加载  
+     (2)__autoload()   php中使用未定义的类时会自动调用  
+     (3)spl_autoload_register()    php中使用未定义的类时会自动调用 此函数注册的方法
     https://segmentfault.com/a/1190000014948542
     ```
 
