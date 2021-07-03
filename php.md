@@ -25,11 +25,13 @@
     // 第三步
     上步的抽象语法树生成对应的opcode，并被虚拟机执行。opcode是PHP 7定义的一组指令标识，指令对应着相应的handler（处理函数）。当虚拟机调用opcode，会找到opcode背后的处理函数，执行真正的处理。
     ```
+    
 3. opcodes和opcache
     ```
     PHP工程优化措施中有一个比较常见的“开启opcache”
     指的就是这里的opcodes的缓存（opcodes cache）。通过省去从源码到opcode的阶段，引擎可以直接执行缓存的opcode，以此提升性能。
     ```
+    
 4. php-fpm
     - 进程模型
     ```
@@ -58,6 +60,7 @@
     ```
 
 5. 自动加载
+<<<<<<< HEAD
     ```
      (1)include,include_once,requice,requice_one常规加载  
      (2)__autoload()   php中使用未定义的类时会自动调用  
@@ -65,6 +68,69 @@
     https://segmentfault.com/a/1190000014948542
     ```
 
+=======
+    
+    - include和require
+    
+      ```
+      手动加载，最初的复用机制
+      ```
+    
+    - __autoload()
+    
+      ```
+      <?php
+      // 当我们在使用一个类时，如果发现这个类没有加载，就会自动运行 __autoload() 函数，实现Lazy loading (惰性加载)。
+      function __autoload($classname) {
+              require_once ($classname . ".class.php");
+      }
+      ```
+    
+    - spl_autoload_register()
+    
+      ```
+      <?php
+      
+      // 我们可以向这个函数注册多个我们自己的 autoload() 函数，当 PHP 找不到类名时，就会调用这个堆栈，然后去调用自定义的 autoload() 函数，实现自动加载功能。
+      
+      function my_autoloader($class) {
+          include 'classes/' . $class . '.class.php';
+      }
+      
+      spl_autoload_register('my_autoloader');
+      
+      
+      // 定义的 autoload 函数在 class 里
+      
+      // 静态方法
+      class MyClass {
+        public static function autoload($className) {
+          // ...
+        }
+      }
+      
+      spl_autoload_register(array('MyClass', 'autoload'));
+      
+      // 非静态方法
+      class MyClass {
+        public function autoload($className) {
+          // ...
+        }
+      }
+      // 是的没错，可以注册多次
+      $instance = new MyClass();
+      spl_autoload_register(array($instance, 'autoload'));
+      ```
+    
+    - 参考
+    
+      ```
+      https://segmentfault.com/a/1190000014948542
+      ```
+    
+      
+    
+>>>>>>> ed68c8250fb7340cbabade44ced185d922c2f2bc
 6. 面向对象-多态
 
    - 定义
