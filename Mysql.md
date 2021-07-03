@@ -67,7 +67,7 @@
 
    - 开启慢查询日志
 
-   ```
+   ```sql
    Show status like ‘slow_queries’;
    Show variables like ‘long_query_time’;
    //更改慢查询设置
