@@ -15,7 +15,7 @@
     - 缺点
 
       ```
-      增加了系统和实现的复杂度
+      增加了应用实现的复杂度
           对于简单的界面，严格遵循MVC，使模型、视图与控制器分离，
           会增加结构的复杂性，并可能产生过多的更新操作，降低运行效率
       视图通过模型访问数据，过于低效
@@ -23,20 +23,23 @@
       ```
 
 2. php的生命周期/php的执行原理
-    ```
-    // 第一步
-    词法分析将PHP代码转换为有意义的标识Token。该步骤的词法分析器使用Re2c实现。
-    // 第二步
-    语法分析将Token和符合文法规则的代码生成抽象语法树。语法分析器基于Bison实现。语法分析使用了BNF（Backus-NaurForm，巴科斯范式）来表达文法规则，Bison借助状态机、状态转移表和压栈、出栈等一系列操作，生成抽象语法树(AST)。
-    // 第三步
-    上步的抽象语法树生成对应的opcode，并被虚拟机执行。opcode是PHP 7定义的一组指令标识，指令对应着相应的handler（处理函数）。当虚拟机调用opcode，会找到opcode背后的处理函数，执行真正的处理。
-    ```
+    
+    - 第一步
+    
+      词法分析将PHP代码转换为有意义的标识Token。该步骤的词法分析器使用Re2c实现。
+    
+    - 第二步
+    
+      语法分析将Token和符合文法规则的代码生成抽象语法树。语法分析器基于Bison实现。语法分析使用了BNF（Backus-NaurForm，巴科斯范式）来表达文法规则，Bison借助状态机、状态转移表和压栈、出栈等一系列操作，生成抽象语法树(AST)。
 
+    - 第三步
+    
+      将上步的抽象语法树生成对应的opcode，并被虚拟机执行。opcode是PHP 7定义的一组指令标识，指令对应着相应的handler（处理函数）。当虚拟机调用opcode，会找到opcode背后的处理函数，执行真正的处理。
+    
 3. opcodes和opcache
-    ```
+
     PHP工程优化措施中有一个比较常见的“开启opcache”
     指的就是这里的opcodes的缓存（opcodes cache）。通过省去从源码到opcode的阶段，引擎可以直接执行缓存的opcode，以此提升性能。
-    ```
 
 4. php-fpm
     - 进程模型
@@ -67,57 +70,55 @@
 
 5. 自动加载    
 
-- include和require
+    - include和require
 
-  ```
-  手动加载，最初的复用机制
-  ```
+      手动加载，最初的复用机制
 
-- __autoload()
+    - __autoload()
 
-  ```
-  <?php
-  // 当我们在使用一个类时，如果发现这个类没有加载，就会自动运行 __autoload() 函数，实现Lazy loading (惰性加载)。
-  function __autoload($classname) {
-          require_once ($classname . ".class.php");
-  }
-  ```
-
-- spl_autoload_register()
-
-  ```php
-  <?php
-  
-  // 我们可以向这个函数注册多个我们自己的 autoload() 函数，当 PHP 找不到类名时，就会调用这个堆栈，然后去调用自定义的 autoload() 函数，实现自动加载功能。
-  
-  function my_autoloader($class) {
-      include 'classes/' . $class . '.class.php';
-  }
-  
-  spl_autoload_register('my_autoloader');
-  
-  // 定义的 autoload 函数在 class 里
-    
-    // 静态方法
-    class MyClass {
-      public static function autoload($className) {
-        // ...
+      ```php
+      <?php
+      // 当我们在使用一个类时，如果发现这个类没有加载，就会自动运行 __autoload() 函数，实现Lazy loading (惰性加载)。
+      function __autoload($classname) {
+              require_once ($classname . ".class.php");
       }
-    }
-    
-    spl_autoload_register(array('MyClass', 'autoload'));
-    
-    // 非静态方法
-    class MyClass {
-      public function autoload($className) {
-        // ...
+      ```
+
+    - spl_autoload_register()
+
+      ```php
+      <?php
+      // 我们可以向这个函数注册多个我们自己的 autoload() 函数，当 PHP 找不到类名时，就会调用这个堆栈，然后去调用自定义的 autoload() 函数，实现自动加载功能。
+      
+      function my_autoloader($class) {
+          include 'classes/' . $class . '.class.php';
       }
-    }
-    // 是的没错，可以注册多次
-    $instance = new MyClass();
-    spl_autoload_register(array($instance, 'autoload'));
-    // 参考
-    https://segmentfault.com/a/1190000014948542
+      
+      spl_autoload_register('my_autoloader');
+      
+      // 定义的 autoload 函数在 class 里
+        
+        // 静态方法
+        class MyClass {
+          public static function autoload($className) {
+            // ...
+          }
+        }
+        
+        spl_autoload_register(array('MyClass', 'autoload'));
+        
+        // 非静态方法
+        class MyClass {
+          public function autoload($className) {
+            // ...
+          }
+        }
+        // 是的没错，可以注册多次
+        $instance = new MyClass();
+        spl_autoload_register(array($instance, 'autoload'));
+        // 参考
+        https://segmentfault.com/a/1190000014948542
+      ```
 
 6. 面向对象-多态
 
