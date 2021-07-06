@@ -201,3 +201,27 @@
    - 使用$_SERVER['REQUEST_TIME'] 要好于time()
 
    - 引入php的缓存机制  zend加速器  
+
+     
+
+9. php cli模式下获取参数的方法
+
+   - 使用argv数组
+
+   - 使用getopt方法
+
+   - 参考
+
+     [php cli模式下获取参数的方法](https://blog.csdn.net/fdipzone/article/details/51945892)
+
+
+
+10. 两数组合并的方法
+
+    - +
+
+    向后合并 会保留最早出现的数据
+
+    - array_merge()
+
+    向前合并 会保留最后出现的数据
