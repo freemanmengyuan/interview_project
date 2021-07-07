@@ -135,3 +135,7 @@
      [数据库中的两个神器](https://mp.weixin.qq.com/s/d7LIlMYAl5dZKv5o3btjxw)
 
      [索引的底层原理](https://zhuanlan.zhihu.com/p/113917726)
+
+7. 自增的主键用完了会出现的问题
+
+   写入时会报主键冲突
