@@ -23,7 +23,7 @@
       ```
 
 2. php的生命周期/php的执行原理
-    
+   
     - 第一步
     
       词法分析将PHP代码转换为有意义的标识Token。该步骤的词法分析器使用Re2c实现。
@@ -94,7 +94,7 @@
       <?php
       // 当我们在使用一个类时，如果发现这个类没有加载，就会自动运行 __autoload() 函数，实现Lazy loading (惰性加载)。
       function __autoload($classname) {
-              require_once ($classname . ".class.php");
+      	require_once ($classname . ".class.php");
       }
       ```
 
@@ -176,13 +176,13 @@
 
 7. php多进程编程
 
-- pcntl_fork() 创建子进程，在父进程返回值是子进程的pid，在子进程返回值是0，-1表示创建进程失败，跟C非常相似。  会存在并行写入现象  出现僵尸进程
+    - pcntl_fork() 创建子进程，在父进程返回值是子进程的pid，在子进程返回值是0，-1表示创建进程失败，跟C非常相似。  会存在并行写入现象  出现僵尸进程
 
--  getmypid() 获取进程的id.  
+    - getmypid() 获取进程的id
 
--  pcntl_wait()  等待父进程结束在执行子进程  （非阻塞的方式）
+    - pcntl_wait()  等待父进程结束在执行子进程  （非阻塞的方式）
 
-  
+      
 
 8. 代码习惯方面的优化
 
@@ -243,4 +243,8 @@
 11. php数组底层的实现原理
 
     [php数组底层的实现原理](https://zhuanlan.zhihu.com/p/97762122)
+
+12. 抽象类和接口的区别
+
+    [php面向对象](https://www.cnblogs.com/xiaochaohuashengmi/archive/2010/09/10/1823042.html)
 
