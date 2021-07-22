@@ -230,7 +230,7 @@
 
 10. 两数组合并的方法
 
-    - +
+    - \+
 
     向后合并 会保留最早出现的数据
 
@@ -244,7 +244,47 @@
 
     [php数组底层的实现原理](https://zhuanlan.zhihu.com/p/97762122)
 
+    
+
 12. 抽象类和接口的区别
 
     [php面向对象](https://www.cnblogs.com/xiaochaohuashengmi/archive/2010/09/10/1823042.html)
+
+    
+
+13. php接受json格式的数据
+
+    - 两种接受方式
+
+      file_get_contents('php://input')
+
+      $GLOBALS['HTTP_RAW_POST_DATA']
+
+    - Content-type的类型
+
+      - 常见的格式
+
+        text/plain：纯文本格式
+
+        text/html：HTML格式
+
+        text/xml：xml格式
+
+      - application开头的格式
+
+        application/x-www-form-urlencoded:
+
+        ​	form表单默认的提交数据方式，form表单的数据会被编码为key-value格式发送到服务器
+
+        ​	可以在服务端用$_POST全局数组进行接受
+
+        application/json
+
+        ​	以json数据的方式发送
+
+        ​	
+
+        
+
+      
 
