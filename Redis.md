@@ -41,7 +41,7 @@
 
    > set：【intset(整数集合)， hashtable】
 
-   > zsort：【ziplist, skiplist】
+   > zSet：【ziplist, skiplist】
 
 
 
