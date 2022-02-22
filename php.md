@@ -68,7 +68,27 @@
     参考：https://zhuanlan.zhihu.com/p/112720502
     ```
 
-5. 自动加载    
+5. php-fpm的work数应该如何设置，设置几个
+
+    ```
+php-fpm优化参数介绍
+    他们分别是：pm、pm.max_children、pm.start_servers、pm.min_spare_servers、pm.max_spare_servers。
+
+    pm：表示使用那种方式，有两个值可以选择，就是static（静态）或者dynamic（动态）。
+在更老一些的版本中，dynamic被称作apache-like。这个要注意看配置文件的说明。
+    
+下面4个参数的意思分别为：
+    pm.max_children：静态方式下开启的php-fpm进程数量
+pm.start_servers：动态方式下的起始php-fpm进程数量
+    pm.min_spare_servers：动态方式下的最小php-fpm进程数
+pm.max_spare_servers：动态方式下的最大php-fpm进程数量
+    
+一般生产环境设置work的数量大约是 服务器的内存/30M
+    php程序在执行过程中，或多或少会存在内存泄露的问题，正常fpm启动的时候占用的内存大约是2-3M,过了一段时间后就会上升到20-30M
+使用静态的方式启动FPM，服务占用内存固定，相对也会更加稳定
+    ```
+
+6. 自动加载    
 
     - include和require
 
@@ -134,7 +154,7 @@
         https://segmentfault.com/a/1190000014948542
       ```
 
-6. 面向对象-多态
+7. 面向对象-多态
 
    - 定义
 
@@ -174,7 +194,7 @@
      }
      ```
 
-7. php多进程编程
+8. php多进程编程
 
     - pcntl_fork() 创建子进程，在父进程返回值是子进程的pid，在子进程返回值是0，-1表示创建进程失败，跟C非常相似。  会存在并行写入现象  出现僵尸进程
 
@@ -184,7 +204,7 @@
 
       
 
-8. 代码习惯方面的优化
+9. 代码习惯方面的优化
 
    - echo比print的效率要高
 
@@ -216,7 +236,7 @@
 
      
 
-9. php cli模式下获取参数的方法
+10. php cli模式下获取参数的方法
 
    - 使用argv数组
 
